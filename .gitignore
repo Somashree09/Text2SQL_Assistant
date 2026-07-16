@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Model artifacts (large, don't belong in git history)
+outputs/*
+!outputs/.gitkeep
+*.bin
+*.safetensors
+*.pt
+
+# Eval outputs
+eval_results.csv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store
+.vscode/
+*.swp
+
+
