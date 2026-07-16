@@ -45,49 +45,66 @@ The repository contains:
 
 # Project Workflow
 
+# Project Workflow
+
 ```mermaid
 graph TD
     A([Natural Language Question]) --> Step1
     
-    subgraph src/data_utils.py
+    subgraph DataPrep ["src/data_utils.py"]
         Step1[Prompt Formatting]
     end
 
-    subgraph src/inference.py
+    subgraph Inference ["src/inference.py"]
         Step1 --> Step2[Fine-tuned Qwen3 Model]
         Step2 --> Step3[Generated SQL Query]
     end
 
-    subgraph src/evaluate.py & src/metrics.py
+    subgraph Eval ["src/evaluate.py & src/metrics.py"]
         Step3 --> Step4[Evaluation Metrics]
     end
 
     %% Theme Optimization
     style Step2 fill:#1f6feb,stroke:#fff,stroke-width:1px,color:#fff
-    style src/data_utils.py fill:#161b22,stroke:#30363d
-    style src/inference.py fill:#161b22,stroke:#30363d
-    style src/evaluate.py & src/metrics.py fill:#161b22,stroke:#30363d
+    style DataPrep fill:#161b22,stroke:#30363d
+    style Inference fill:#161b22,stroke:#30363d
+    style Eval fill:#161b22,stroke:#30363d
 ```
 
+
 # Training Pipeline
+### Technical Workflow Map
+
 ```mermaid
 graph TD
-    subgraph Data Preparation
+    subgraph DataPrep ["Data Preparation (src/data_utils.py)"]
         A[Dataset] --> B[Load Dataset]
         B --> C[Format Prompt]
         C --> D[Tokenization]
     end
 
-    subgraph Model Setup & Training
-        D --> E[Load Base Model]
-        E --> F[Apply LoRA]
-        F --> G[Fine-tuning]
-        G --> H[Save Adapter]
+    subgraph ModelTraining ["Model Setup & Training (src/train.py)"]
+        D --> E[Load Base Qwen Model]
+        E --> F[Apply LoRA Config]
+        F --> G[Execute Fine-tuning]
+        G --> H[Save Adapter to outputs/]
     end
 
-    style Data Preparation fill:#161b22,stroke:#30363d
-    style Model Setup & Training fill:#161b22,stroke:#30363d
+    subgraph ModelEval ["Evaluation (src/evaluate.py & src/metrics.py)"]
+        H --> I[Inference on Test Set]
+        I --> J[Compute SQL Metrics]
+        J --> K[Export Logs to outputs/]
+    end
+
+    %% Visual Anchors Styling
+    style A fill:#238636,stroke:#fff,stroke-width:1px,color:#fff
+    style H fill:#1f6feb,stroke:#fff,stroke-width:1px,color:#fff
+    style K fill:#8957e5,stroke:#fff,stroke-width:1px,color:#fff
+    style DataPrep fill:#161b22,stroke:#30363d
+    style ModelTraining fill:#161b22,stroke:#30363d
+    style ModelEval fill:#161b22,stroke:#30363d
 ```
+
 
 # Evaluation Pipeline
 
