@@ -16,11 +16,11 @@ This project demonstrates an end-to-end **Text-to-SQL** system built using **Qwe
 
 The repository contains:
 
-- Training Pipeline
-- Inference Pipeline
-- Evaluation Pipeline
-- LoRA Adapter Saving
-- SQL Quality Metrics
+ - Training Pipeline
+ - Inference Pipeline
+ - Evaluation Pipeline
+ - LoRA Adapter Saving
+ - SQL Quality Metrics
 
 ---
 
@@ -44,46 +44,50 @@ The repository contains:
                                    Evaluation Pipeline
 
 # Project Workflow
-Natural Language Question
-            │
-            ▼
-+---------------------------+
-| Prompt Formatting         |
-+---------------------------+
-            │
-            ▼
-+---------------------------+
-| Fine-tuned Qwen3 Model    |
-+---------------------------+
-            │
-            ▼
-Generated SQL Query
-            │
-            ▼
-Evaluation Metrics
+
+```mermaid
+graph TD
+    A([Natural Language Question]) --> Step1
+    
+    subgraph src/data_utils.py
+        Step1[Prompt Formatting]
+    end
+
+    subgraph src/inference.py
+        Step1 --> Step2[Fine-tuned Qwen3 Model]
+        Step2 --> Step3[Generated SQL Query]
+    end
+
+    subgraph src/evaluate.py & src/metrics.py
+        Step3 --> Step4[Evaluation Metrics]
+    end
+
+    %% Theme Optimization
+    style Step2 fill:#1f6feb,stroke:#fff,stroke-width:1px,color:#fff
+    style src/data_utils.py fill:#161b22,stroke:#30363d
+    style src/inference.py fill:#161b22,stroke:#30363d
+    style src/evaluate.py & src/metrics.py fill:#161b22,stroke:#30363d
+```
+
 # Training Pipeline
-Dataset
-   │
-   ▼
-Load Dataset
-   │
-   ▼
-Format Prompt
-   │
-   ▼
-Tokenization
-   │
-   ▼
-Load Base Model
-   │
-   ▼
-Apply LoRA
-   │
-   ▼
-Fine-tuning
-   │
-   ▼
-Save Adapter
+```mermaid
+graph TD
+    subgraph Data Preparation
+        A[Dataset] --> B[Load Dataset]
+        B --> C[Format Prompt]
+        C --> D[Tokenization]
+    end
+
+    subgraph Model Setup & Training
+        D --> E[Load Base Model]
+        E --> F[Apply LoRA]
+        F --> G[Fine-tuning]
+        G --> H[Save Adapter]
+    end
+
+    style Data Preparation fill:#161b22,stroke:#30363d
+    style Model Setup & Training fill:#161b22,stroke:#30363d
+```
 
 # Evaluation Pipeline
 
@@ -106,25 +110,25 @@ Save Adapter
               Evaluation Report (.csv)
 
 
-# Repository Structure
-text2sql-qwen-lora/
+# Repository Structure & Workflow
 
-│── configs/
-│     └── config.yaml
-│
-│── outputs/
-│     ├── adapter/
-│     └── evaluation/
-│
-│── src/
-│     ├── data_utils.py
-│     ├── train.py
-│     ├── inference.py
-│     ├── evaluate.py
-│     └── metrics.py
-│
-│── requirements.txt
-│── README.md
+```text
+text2sql-qwen-lora/
+├── configs/
+│   └── config.yaml          # Hyperparameters, LoRA configurations, and dataset paths
+├── outputs/
+│   ├── adapter/             # Final trained LoRA adapter weights & checkpoints
+│   └── evaluation/          # Benchmark results, generated SQL, and test logs
+├── src/
+│   ├── data_utils.py        # Dataset loading ──> Prompt formatting ──> Tokenization
+│   ├── train.py             # Load base model ──> Apply LoRA ──> Run Fine-tuning
+│   ├── inference.py         # Loads saved adapter for interactive Text-to-SQL generation
+│   ├── evaluate.py          # Main execution loop for testing model on holdout sets
+│   └── metrics.py           # Computes Execution Accuracy and Exact Set Match scores
+├── requirements.txt         # Python dependencies (peft, transformers, trl, bitsandbytes)
+└── README.md                # Project documentation
+```
+
 
 
 # Model
@@ -174,17 +178,17 @@ python src/evaluate.py --config configs/config.yaml
 python src/inference.py --config configs/config.yaml
 
 # Current Limitations
--Trained on a subset (5,000 samples)
--Synthetic execution evaluation (not official Spider execution)
--Single-model support
+ - Trained on a subset (5,000 samples)
+ - Synthetic execution evaluation (not official Spider execution)
+ - Single-model support
 
 # Future Improvements
--Official Spider evaluation
--FastAPI backend
--Streamlit frontend
--Docker support
--TensorBoard logging
--Hugging Face Spaces deployment
+ - Official Spider evaluation
+ - FastAPI backend
+ - Streamlit frontend
+ - Docker support
+ - TensorBoard logging
+ - Hugging Face Spaces deployment
 
 # Tech Stack
 -Python
